@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+<script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDQ7wkmiOi0GSinNZhbngbsoW3KXPTmT9s",
+    authDomain: "test1-a8eb0.firebaseapp.com",
+    databaseURL: "https://test1-a8eb0.firebaseio.com",
+    projectId: "test1-a8eb0",
+    storageBucket: "",
+    messagingSenderId: "126977171870"
+  };
+  firebase.initializeApp(config);
+
+
+  /////////////////初始化////////////////////
+
+  var database = firebase.database();
+  //////////////寫資料/////////////////////
+  var id=null;
+  ///////////////檢查總人數///////////////////////
+  database.ref().on("value", function(snapshot) {
+    id = snapshot.val().total;
+  });
+
+  if(id!=null){
+    id+=1;
+  }
+  else
+    database.ref().set({
+      total:0
+  });
+  if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position){
+          writeData(id,position.coords.latitude,position.coords.longitude);
+        });
+    } else {
+        console.log("Geolocation is not supported by this browser.");
+    }
+  function writeData(id,latitude,longitude){
+    database.ref("delivery/man"+id).set({
+      Latitude:latitude,
+      Longitude:longitude
+    });
+
+  }
+//////////////////讀資料////////////////////////
+
+  function readData(id){
+    database.ref("delivery/man"+id).on("value", function(snapshot) {
+      var a = snapshot.val().Latitude;
+      var b = snapshot.val().Longitude;
+      console.log("Latitude:"+a+"Longitude:"+b);
+  });
+  }
+  readData(0);
+  /////////////////////////////////////
+</script>
+  </body>
+</html>
