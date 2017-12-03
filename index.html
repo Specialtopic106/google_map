@@ -16,24 +16,28 @@
   };
   firebase.initializeApp(config);
 
-
+var id=2;
   /////////////////初始化////////////////////
 
   var database = firebase.database();
-  //////////////寫資料/////////////////////
-  var id=null;
+
   ///////////////檢查總人數///////////////////////
-  database.ref().on("value", function(snapshot) {
-    id = snapshot.val().total;
+   database.ref("delivery/").on("value", function(snapshot) {
+     id = snapshot.val().total;
   });
 
-  if(id!=null){
+  if(id!==null){
     id+=1;
+      database.ref("delivery/").update({
+        total:id
+      });
   }
-  else
-    database.ref().set({
-      total:0
-  });
+  else{
+    id=0;
+    database.ref("delivery/").update({
+      total:id
+      });
+};
   if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position){
           writeData(id,position.coords.latitude,position.coords.longitude);
@@ -42,7 +46,7 @@
         console.log("Geolocation is not supported by this browser.");
     }
   function writeData(id,latitude,longitude){
-    database.ref("delivery/man"+id).set({
+    database.ref("delivery/man"+id).update({
       Latitude:latitude,
       Longitude:longitude
     });
@@ -57,7 +61,6 @@
       console.log("Latitude:"+a+"Longitude:"+b);
   });
   }
-  readData(0);
   /////////////////////////////////////
 </script>
   </body>
