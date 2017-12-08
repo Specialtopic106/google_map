@@ -16,42 +16,40 @@
   };
   firebase.initializeApp(config);
 
-var id=2;
+
   /////////////////初始化////////////////////
 
   var database = firebase.database();
 
   ///////////////檢查總人數///////////////////////
-   database.ref("delivery/").on("value", function(snapshot) {
-     id = snapshot.val().total;
-  });
+  function AddPeople(){
+    database.ref("delivery/").once("value").then(function(snapshot) {
+       var total = snapshot.numChildren();
+      total+=1;
+      database.ref("/").update({
+      total:total
+       });
+       setPosition(total);
+   });
+ };
 
-  if(id!==null){
-    id+=1;
-      database.ref("delivery/").update({
-        total:id
-      });
-  }
-  else{
-    id=0;
-    database.ref("delivery/").update({
-      total:id
-      });
-};
-  if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position){
-          writeData(id,position.coords.latitude,position.coords.longitude);
-        });
-    } else {
-        console.log("Geolocation is not supported by this browser.");
+    function setPosition(id){
+     if (navigator.geolocation) {
+           navigator.geolocation.getCurrentPosition(function(position){
+             writeData(id,position.coords.latitude,position.coords.longitude);
+           });
+       } else {
+           console.log("Geolocation is not supported by this browser.");
+       }
     }
-  function writeData(id,latitude,longitude){
-    database.ref("delivery/man"+id).update({
-      Latitude:latitude,
-      Longitude:longitude
-    });
 
-  }
+   function writeData(id,latitude,longitude){
+     database.ref("delivery/man"+id).update({
+       Latitude:latitude,
+       Longitude:longitude
+     });
+   }
+AddPeople();
 //////////////////讀資料////////////////////////
 
   function readData(id){
